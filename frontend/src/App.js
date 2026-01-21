@@ -13,6 +13,7 @@ import LoansPage from "./pages/LoansPage";
 import SavingsPage from "./pages/SavingsPage";
 import ReportsPage from "./pages/ReportsPage";
 import SettingsPage from "./pages/SettingsPage";
+import BanksPage from "./pages/BanksPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentCancelPage from "./pages/PaymentCancelPage";
 import "./App.css";
@@ -77,6 +78,7 @@ function AppRoutes() {
         <Route path="savings" element={<SavingsPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="banks" element={<BanksPage />} />
       </Route>
       
       {/* Catch all */}

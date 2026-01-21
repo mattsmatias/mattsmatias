@@ -22,7 +22,8 @@ import {
   Settings,
   Menu,
   X,
-  BarChart3
+  BarChart3,
+  Building2
 } from "lucide-react";
 
 const navItems = [
@@ -33,6 +34,7 @@ const navItems = [
   { path: "/dashboard/loans", icon: Target, label: "Lainat" },
   { path: "/dashboard/savings", icon: PiggyBank, label: "Säästöt" },
   { path: "/dashboard/reports", icon: BarChart3, label: "Raportit" },
+  { path: "/dashboard/banks", icon: Building2, label: "Pankit" },
 ];
 
 const DashboardLayout = () => {
