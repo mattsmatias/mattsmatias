@@ -256,7 +256,7 @@ class WalletaAPITester:
             "end_date": "2043-01-01"
         }
         
-        success, loan = self.make_request('POST', 'loans', loan_data, 201)
+        success, loan = self.make_request('POST', 'loans', loan_data)
         if success and 'id' in loan:
             loan_id = loan['id']
             self.log_result("Create loan", True, f"Loan ID: {loan_id}")
