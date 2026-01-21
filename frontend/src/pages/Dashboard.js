@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { api, formatCurrency, formatPercentage } from "../lib/api";
+import { useLanguage } from "../context/LanguageContext";
 import { Button } from "../components/ui/button";
 import { Progress } from "../components/ui/progress";
 import { toast } from "sonner";
@@ -35,6 +36,7 @@ const categoryConfig = {
 };
 
 const Dashboard = () => {
+  const { t } = useLanguage();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAlert, setShowAlert] = useState(true);
@@ -73,14 +75,14 @@ const Dashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
-            Yleiskatsaus
+            {t("dashboard_title")}
           </h1>
-          <p className="text-slate-500 text-sm sm:text-base mt-0.5">Tässä kuussa paljonko maksaa elää</p>
+          <p className="text-slate-500 text-sm sm:text-base mt-0.5">{t("dashboard_subtitle")}</p>
         </div>
         <Link to="/dashboard/expenses">
           <Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-full w-full sm:w-auto" data-testid="add-expense-btn">
             <Plus className="w-4 h-4 mr-2" />
-            Lisää kulu
+            {t("add_expense")}
           </Button>
         </Link>
       </div>
@@ -93,9 +95,9 @@ const Dashboard = () => {
               <TrendingUp className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-semibold">Lähestyt budjettirajaa</p>
+              <p className="font-semibold">{t("budget_alert_title")}</p>
               <p className="text-amber-100 text-sm">
-                Olet käyttänyt {formatPercentage(budgetPercentage)} budjetistasi.
+                {t("budget_alert_desc", { percentage: formatPercentage(budgetPercentage) })}
               </p>
             </div>
           </div>
@@ -115,8 +117,8 @@ const Dashboard = () => {
             <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
           </div>
           <div>
-            <p className="text-slate-400 text-xs sm:text-sm">Kuukauden kulut</p>
-            <p className="text-white text-xs sm:text-sm">Aktiiviset kiinteät menot</p>
+            <p className="text-slate-400 text-xs sm:text-sm">{t("monthly_expenses")}</p>
+            <p className="text-white text-xs sm:text-sm">{t("active_fixed_expenses")}</p>
           </div>
         </div>
         
@@ -124,11 +126,11 @@ const Dashboard = () => {
           <span className="text-3xl sm:text-5xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
             {formatCurrency(summary?.expenses?.total || 0).replace('€', '').trim()}
           </span>
-          <span className="text-lg sm:text-2xl text-slate-400 ml-1 sm:ml-2">€ /kk</span>
+          <span className="text-lg sm:text-2xl text-slate-400 ml-1 sm:ml-2">€ {t("per_month_short")}</span>
         </div>
         
         <div className="flex items-center justify-between mb-2">
-          <span className="text-slate-400 text-sm">Budjetista käytetty</span>
+          <span className="text-slate-400 text-sm">{t("budget_used")}</span>
           <span className={`font-semibold ${budgetPercentage >= 75 ? 'text-amber-400' : 'text-emerald-400'}`}>
             {formatPercentage(budgetPercentage)}
           </span>
@@ -142,7 +144,7 @@ const Dashboard = () => {
         </div>
         
         <p className="text-slate-500 text-sm mt-3">
-          Budjetti: {formatCurrency(summary?.budget?.amount || 0)} / kk
+          {t("budget")}: {formatCurrency(summary?.budget?.amount || 0)} {t("per_month_short")}
         </p>
       </div>
 
