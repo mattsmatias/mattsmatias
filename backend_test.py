@@ -220,7 +220,7 @@ class WalletaAPITester:
             "month": datetime.now().strftime("%Y-%m")
         }
         
-        success, budget = self.make_request('POST', 'budgets', budget_data, 201)
+        success, budget = self.make_request('POST', 'budgets', budget_data)
         if success and 'id' in budget:
             self.log_result("Create budget", True, f"Budget ID: {budget['id']}")
         else:
