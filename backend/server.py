@@ -11,6 +11,8 @@ import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
 import jwt
+import httpx
+import time
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 
 ROOT_DIR = Path(__file__).parent
@@ -29,6 +31,11 @@ JWT_EXPIRATION_HOURS = 24
 # Stripe Configuration
 STRIPE_API_KEY = os.environ.get('STRIPE_API_KEY', 'sk_test_emergent')
 SUBSCRIPTION_PRICE = 4.99  # EUR/month
+
+# Nordigen/GoCardless Configuration
+NORDIGEN_SECRET_ID = os.environ.get('NORDIGEN_SECRET_ID', '')
+NORDIGEN_SECRET_KEY = os.environ.get('NORDIGEN_SECRET_KEY', '')
+NORDIGEN_API_URL = "https://bankaccountdata.gocardless.com/api/v2"
 
 # Create the main app
 app = FastAPI(title="Walleta API", description="Personal Finance Management")
