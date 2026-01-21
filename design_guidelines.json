@@ -1,0 +1,103 @@
+{
+  "identity": {
+    "name": "E1",
+    "role": "The Anti-AI Designer",
+    "philosophy": "Fusion over Imitation. Emotion First. Nordic Clarity."
+  },
+  "brand": {
+    "name": "Walleta",
+    "archetype": "Nordic Clarity",
+    "keywords": ["Stress-free", "Empowering", "Clean", "Contrast"],
+    "language": "fi-FI",
+    "currency": "EUR"
+  },
+  "typography": {
+    "headings": {
+      "family": "Manrope, sans-serif",
+      "weights": ["600", "800"],
+      "usage": "Use for all section headers, card titles, and big numbers. Tight tracking."
+    },
+    "body": {
+      "family": "Inter, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "Use for labels, paragraphs, and data tables."
+    },
+    "installation": "Import via Google Fonts in index.css: @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;700;800&display=swap');"
+  },
+  "colors": {
+    "palette": {
+      "background": "#F8FAFC",
+      "foreground": "#0F172A",
+      "card_dark": "#1E293B",
+      "card_dark_foreground": "#F8FAFC",
+      "primary": "#0F172A",
+      "accent_income": "#10B981",
+      "accent_expense": "#F59E0B",
+      "accent_loan": "#EF4444",
+      "muted": "#94A3B8"
+    },
+    "rules": [
+      "CRITICAL: The app uses a 'Hybrid Theme'. The page background is LIGHT (#F8FAFC).",
+      "CRITICAL: Main data cards (Budget, Balance, Savings) must be DARK (#1E293B) with white text to match the reference.",
+      "Secondary cards (Recent transactions list) can be white/light.",
+      "Income numbers must always be Green (#10B981).",
+      "Expense/Alert numbers must always be Orange/Amber (#F59E0B)."
+    ]
+  },
+  "layout": {
+    "grid_system": "Bento Grid (Mode B)",
+    "spacing": "Generous. Use p-6 or p-8 for cards. gap-6 for grids.",
+    "radius": "rounded-xl (12px) or rounded-2xl (16px) for cards.",
+    "responsive": "Mobile-first. Stack columns on mobile, expand to 3-4 columns on desktop."
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-slate-900 text-white hover:bg-slate-800 rounded-full px-8",
+      "secondary": "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50 rounded-full px-8",
+      "ghost": "hover:bg-slate-100 text-slate-600"
+    },
+    "cards": {
+      "data_widget": "bg-slate-900 text-white rounded-2xl p-6 shadow-xl border border-slate-800",
+      "standard": "bg-white text-slate-900 rounded-2xl p-6 shadow-sm border border-slate-100"
+    },
+    "inputs": {
+      "style": "bg-white border-slate-200 focus:ring-2 focus:ring-slate-900 rounded-lg h-12"
+    }
+  },
+  "images": {
+    "hero_bg": "https://images.pexels.com/photos/19238352/pexels-photo-19238352.jpeg",
+    "user_happy": "https://images.pexels.com/photos/7821552/pexels-photo-7821552.jpeg",
+    "money_concept": "https://images.pexels.com/photos/163069/mobile-phone-money-banknotes-us-dollars-163069.jpeg",
+    "instructions": "Use 'hero_bg' for the landing page hero section background (with overlay). Use 'user_happy' for the testimonials or 'Join us' section."
+  },
+  "localization_dictionary": {
+    "dashboard": "Yleiskatsaus",
+    "budget": "Budjetti",
+    "income": "Tulot",
+    "expenses": "Menot",
+    "loans": "Lainat",
+    "savings": "Säästöt",
+    "settings": "Asetukset",
+    "login": "Kirjaudu",
+    "register": "Rekisteröidy",
+    "total_balance": "Kokonaisvarat",
+    "monthly_spending": "Kuukauden kulutus",
+    "add_new": "Lisää uusi"
+  },
+  "instructions_to_main_agent": [
+    "1. FILE EXTENSIONS: You are working with a React JS project. Use .js and .jsx extensions. DO NOT use .ts or .tsx.",
+    "2. SHADCN: The components are already installed in /src/components/ui. Use them.",
+    "3. ROUTING: Use 'react-router-dom' for navigation. Create a layout wrapper for the dashboard.",
+    "4. MOCK DATA: Since there is no backend connected yet, create a 'mockData.js' file to populate the dashboard with realistic Finnish data.",
+    "5. AUTH: Mock the JWT auth flow. Store a fake token in localStorage.",
+    "6. STRIPE: Mock the Stripe payment flow. Just show a success message after 'payment'.",
+    "7. LANGUAGE: All UI text MUST be in Finnish.",
+    "8. THEME: Implement the 'Hybrid Theme' (Light Page + Dark Widgets) manually using Tailwind classes. Do not rely on the system dark mode toggle for this specific look."
+  ],
+  "universal_guidelines": [
+    "Avoid 'AI Slop': Do not use generic gradients or centered text everywhere.",
+    "Micro-interactions: Add hover states to all cards (scale-105 or lift).",
+    "Data-Test-ID: Add data-testid attributes to all interactive elements.",
+    "Accessibility: Ensure high contrast between text and card backgrounds."
+  ]
+}
