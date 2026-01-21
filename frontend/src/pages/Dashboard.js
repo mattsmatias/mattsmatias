@@ -108,6 +108,44 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Monthly Expenses Card - Dark */}
+      <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 text-white" data-testid="expenses-card">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+            <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
+          </div>
+          <div>
+            <p className="text-slate-400 text-xs sm:text-sm">Kuukauden kulut</p>
+            <p className="text-white text-xs sm:text-sm">Aktiiviset kiinteät menot</p>
+          </div>
+        </div>
+        
+        <div className="mb-3">
+          <span className="text-3xl sm:text-5xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
+            {formatCurrency(summary?.expenses?.total || 0).replace('€', '').trim()}
+          </span>
+          <span className="text-lg sm:text-2xl text-slate-400 ml-1 sm:ml-2">€ /kk</span>
+        </div>
+        
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-slate-400 text-sm">Budjetista käytetty</span>
+          <span className={`font-semibold ${budgetPercentage >= 75 ? 'text-amber-400' : 'text-emerald-400'}`}>
+            {formatPercentage(budgetPercentage)}
+          </span>
+        </div>
+        
+        <div className="w-full bg-slate-700 rounded-full h-3">
+          <div 
+            className={`h-3 rounded-full progress-animate ${budgetPercentage >= 75 ? 'bg-amber-400' : 'bg-emerald-400'}`}
+            style={{ width: `${Math.min(budgetPercentage, 100)}%` }}
+          ></div>
+        </div>
+        
+        <p className="text-slate-500 text-sm mt-3">
+          Budjetti: {formatCurrency(summary?.budget?.amount || 0)} / kk
+        </p>
+      </div>
+
       {/* Income Card - Green with breakdown */}
       <div className="bg-emerald-500 rounded-2xl p-4 sm:p-6 text-white" data-testid="income-card">
         <div className="flex items-center justify-between mb-4">
