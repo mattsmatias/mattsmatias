@@ -155,26 +155,26 @@ const Dashboard = () => {
             <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
               <Wallet className="w-5 h-5" />
             </div>
-            <span className="font-medium">Tulot & Käteen jäävä</span>
+            <span className="font-medium">{t("income_remaining")}</span>
           </div>
           <Link to="/dashboard/incomes">
             <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
               <Plus className="w-4 h-4 mr-1" />
-              Lisää tulo
+              {t("add_income")}
             </Button>
           </Link>
         </div>
         
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
-            <p className="text-emerald-100 text-xs sm:text-sm mb-1">Nettotulot yhteensä</p>
+            <p className="text-emerald-100 text-xs sm:text-sm mb-1">{t("net_income_total")}</p>
             <p className="text-2xl sm:text-4xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
               {formatCurrency(summary?.income?.total || 0).replace('€', '').trim()}
             </p>
-            <p className="text-emerald-200 text-sm">€/kk</p>
+            <p className="text-emerald-200 text-sm">€{t("per_month_short")}</p>
           </div>
           <div className="text-right">
-            <p className="text-emerald-100 text-xs sm:text-sm mb-1">Käteen jää</p>
+            <p className="text-emerald-100 text-xs sm:text-sm mb-1">{t("remaining")}</p>
             <div className="flex items-center justify-end gap-2">
               <p className="text-2xl sm:text-4xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
                 {formatCurrency(summary?.balance?.remaining || 0).replace('€', '').trim()}
@@ -183,7 +183,7 @@ const Dashboard = () => {
                 {remainingPercentage}%
               </span>
             </div>
-            <p className="text-emerald-200 text-sm">€/kk</p>
+            <p className="text-emerald-200 text-sm">€{t("per_month_short")}</p>
           </div>
         </div>
 
