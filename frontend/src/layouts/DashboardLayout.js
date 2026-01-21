@@ -89,7 +89,10 @@ const DashboardLayout = () => {
             </nav>
 
             {/* Right side */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              {/* Language switcher */}
+              <LanguageSwitcher />
+
               {/* Notification bell */}
               <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-900">
                 <Bell className="w-5 h-5" />
