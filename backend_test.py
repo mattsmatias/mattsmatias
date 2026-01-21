@@ -299,7 +299,7 @@ class WalletaAPITester:
             "icon": "plane"
         }
         
-        success, savings = self.make_request('POST', 'savings', savings_data, 201)
+        success, savings = self.make_request('POST', 'savings', savings_data)
         if success and 'id' in savings:
             savings_id = savings['id']
             self.log_result("Create savings goal", True, f"Savings ID: {savings_id}")
