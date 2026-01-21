@@ -57,11 +57,10 @@ const BanksPage = () => {
       try {
         const banksRes = await api.get("/banks/finland");
         setBanks(banksRes.data || []);
+        setNordigenConfigured(true);
       } catch (error) {
-        if (error.response?.status === 500 && error.response?.data?.detail?.includes("not configured")) {
-          setNordigenConfigured(false);
-        }
         console.error("Error fetching banks:", error);
+        setNordigenConfigured(false);
       }
       
       // Fetch user's connections
