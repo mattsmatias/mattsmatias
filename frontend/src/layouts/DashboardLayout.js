@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import { Button } from "../components/ui/button";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,21 +28,22 @@ import {
   Building2
 } from "lucide-react";
 
-const navItems = [
-  { path: "/dashboard", icon: Home, label: "Yleiskatsaus", exact: true },
-  { path: "/dashboard/budget", icon: TrendingUp, label: "Budjetti" },
-  { path: "/dashboard/expenses", icon: CreditCard, label: "Menot" },
-  { path: "/dashboard/incomes", icon: Wallet, label: "Tulot" },
-  { path: "/dashboard/loans", icon: Target, label: "Lainat" },
-  { path: "/dashboard/savings", icon: PiggyBank, label: "Säästöt" },
-  { path: "/dashboard/reports", icon: BarChart3, label: "Raportit" },
-  { path: "/dashboard/banks", icon: Building2, label: "Pankit" },
-];
-
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navItems = [
+    { path: "/dashboard", icon: Home, label: t("nav_overview"), exact: true },
+    { path: "/dashboard/budget", icon: TrendingUp, label: t("nav_budget") },
+    { path: "/dashboard/expenses", icon: CreditCard, label: t("nav_expenses") },
+    { path: "/dashboard/incomes", icon: Wallet, label: t("nav_incomes") },
+    { path: "/dashboard/loans", icon: Target, label: t("nav_loans") },
+    { path: "/dashboard/savings", icon: PiggyBank, label: t("nav_savings") },
+    { path: "/dashboard/reports", icon: BarChart3, label: t("nav_reports") },
+    { path: "/dashboard/banks", icon: Building2, label: t("nav_banks") },
+  ];
 
   const handleLogout = () => {
     logout();
