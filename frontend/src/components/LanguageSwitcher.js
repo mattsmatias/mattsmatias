@@ -1,9 +1,14 @@
 import { useLanguage } from "../context/LanguageContext";
 import { Button } from "./ui/button";
-import { Globe } from "lucide-react";
 
 const LanguageSwitcher = ({ variant = "icon" }) => {
   const { language, toggleLanguage } = useLanguage();
+
+  // Flag emojis
+  const flags = {
+    fi: "🇫🇮",
+    en: "🇬🇧"
+  };
 
   if (variant === "icon") {
     return (
@@ -11,10 +16,10 @@ const LanguageSwitcher = ({ variant = "icon" }) => {
         variant="ghost"
         size="icon"
         onClick={toggleLanguage}
-        className="text-slate-500 hover:text-slate-900"
+        className="text-lg hover:bg-slate-100"
         title={language === "fi" ? "Switch to English" : "Vaihda suomeksi"}
       >
-        <Globe className="w-5 h-5" />
+        {flags[language]}
       </Button>
     );
   }
@@ -25,7 +30,7 @@ const LanguageSwitcher = ({ variant = "icon" }) => {
       onClick={toggleLanguage}
       className="rounded-full"
     >
-      <Globe className="w-4 h-4 mr-2" />
+      <span className="text-lg mr-2">{flags[language]}</span>
       {language === "fi" ? "English" : "Suomi"}
     </Button>
   );
