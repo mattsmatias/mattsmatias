@@ -712,6 +712,17 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
     
     total_expenses = sum(e["amount"] for e in expenses)
     
+    # Group expenses by category
+    category_totals = {}
+    for expense in expenses:
+        cat = expense.get("category", "Muut")
+        category_totals[cat] = category_totals.get(cat, 0) + expense["amount"]
+    
+    expense_categories = [
+        {"name": name, "amount": amount, "percentage": round((amount / total_expenses * 100) if total_expenses > 0 else 0, 1)}
+        for name, amount in sorted(category_totals.items(), key=lambda x: x[1], reverse=True)
+    ]
+    
     # Get monthly incomes
     incomes = await db.incomes.find(
         {"user_id": user["id"], "date": {"$regex": f"^{current_month}"}},
@@ -719,6 +730,24 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
     ).to_list(1000)
     
     total_income = sum(i["amount"] for i in incomes)
+    
+    # Group incomes by source
+    source_totals = {}
+    source_labels = {
+        "salary": "Palkka",
+        "freelance": "Freelance-työt",
+        "investment": "Sijoitukset",
+        "other": "Muut tulot"
+    }
+    for income in incomes:
+        source = income.get("source", "other")
+        label = source_labels.get(source, source)
+        source_totals[label] = source_totals.get(label, 0) + income["amount"]
+    
+    income_sources = [
+        {"name": name, "amount": amount}
+        for name, amount in sorted(source_totals.items(), key=lambda x: x[1], reverse=True)
+    ]
     
     # Get loans summary
     loans = await db.loans.find({"user_id": user["id"]}, {"_id": 0}).to_list(100)
@@ -736,6 +765,7 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
     
     # Calculate remaining money
     remaining = total_income - total_expenses - total_monthly_loan_payments
+    remaining_percentage = round((remaining / total_income * 100) if total_income > 0 else 0, 0)
     
     return {
         "budget": {
@@ -746,12 +776,14 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
         },
         "income": {
             "total": total_income,
-            "count": len(incomes)
+            "count": len(incomes),
+            "sources": income_sources
         },
         "expenses": {
             "total": total_expenses,
             "count": len(expenses),
-            "recent": expenses[:5]
+            "recent": expenses[:5],
+            "categories": expense_categories
         },
         "loans": {
             "total_remaining": total_loans,
@@ -765,6 +797,7 @@ async def get_dashboard_summary(user: dict = Depends(get_current_user)):
         },
         "balance": {
             "remaining": remaining,
+            "remaining_percentage": remaining_percentage,
             "net_worth": total_saved - total_loans
         },
         "month": current_month
