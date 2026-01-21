@@ -121,14 +121,14 @@ const DashboardLayout = () => {
                     )}
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer">
+                  <DropdownMenuItem onClick={() => navigate('/dashboard/settings')} className="cursor-pointer">
                     <Settings className="w-4 h-4 mr-2" />
-                    Asetukset
+                    {t("nav_settings")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600" data-testid="logout-btn">
                     <LogOut className="w-4 h-4 mr-2" />
-                    Kirjaudu ulos
+                    {t("logout")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
