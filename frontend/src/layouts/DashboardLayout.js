@@ -18,7 +18,6 @@ import {
   Wallet, 
   Target, 
   PiggyBank,
-  Bell,
   User,
   LogOut,
   Settings,
@@ -90,11 +89,6 @@ const DashboardLayout = () => {
             <div className="flex items-center gap-2">
               {/* Language switcher */}
               <LanguageSwitcher />
-
-              {/* Notification bell */}
-              <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-900">
-                <Bell className="w-5 h-5" />
-              </Button>
 
               {/* User menu */}
               <DropdownMenu>
