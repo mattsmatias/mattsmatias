@@ -46,15 +46,15 @@ const DashboardLayout = () => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Top Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 safe-area-top">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <NavLink to="/dashboard" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
-                <Wallet className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-slate-900 rounded-xl flex items-center justify-center">
+                <Wallet className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-slate-900 hidden sm:block" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              <span className="text-lg sm:text-xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
                 Walleta
               </span>
             </NavLink>
@@ -164,28 +164,28 @@ const DashboardLayout = () => {
       </header>
 
       {/* Main Content */}
-      <main className="pt-20 pb-8 px-4 sm:px-6 lg:px-8">
+      <main className="pt-16 sm:pt-20 pb-24 md:pb-8 px-3 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <Outlet />
         </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-40">
-        <div className="flex items-center justify-around py-2">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-40 safe-area-bottom">
+        <div className="flex items-center justify-around py-1 pb-safe">
           {navItems.slice(0, 5).map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               end={item.exact}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors ${
+                `flex flex-col items-center gap-0.5 px-2 py-2 text-[10px] sm:text-xs font-medium transition-colors ${
                   isActive ? "text-slate-900" : "text-slate-400"
                 }`
               }
             >
               <item.icon className="w-5 h-5" />
-              <span>{item.label}</span>
+              <span className="truncate">{item.label}</span>
             </NavLink>
           ))}
         </div>

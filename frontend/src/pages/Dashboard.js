@@ -51,15 +51,15 @@ const Dashboard = () => {
   return (
     <div className="space-y-6 pb-20 md:pb-0" data-testid="dashboard">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900" style={{ fontFamily: 'Manrope, sans-serif' }}>
             Yleiskatsaus
           </h1>
-          <p className="text-slate-500 mt-1">Tässä kuussa paljonko maksaa elää</p>
+          <p className="text-slate-500 text-sm sm:text-base mt-0.5">Tässä kuussa paljonko maksaa elää</p>
         </div>
         <Link to="/dashboard/expenses">
-          <Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-full" data-testid="add-expense-btn">
+          <Button className="bg-slate-900 text-white hover:bg-slate-800 rounded-full w-full sm:w-auto" data-testid="add-expense-btn">
             <Plus className="w-4 h-4 mr-2" />
             Lisää kulu
           </Button>
@@ -90,24 +90,24 @@ const Dashboard = () => {
       )}
 
       {/* Main Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Monthly Expenses Card - Dark */}
-        <div className="bg-slate-900 rounded-2xl p-6 text-white card-hover lg:col-span-2" data-testid="expenses-card">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-              <CreditCard className="w-6 h-6 text-emerald-400" />
+        <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 text-white card-hover lg:col-span-2" data-testid="expenses-card">
+          <div className="flex items-center gap-3 mb-4 sm:mb-6">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
+              <CreditCard className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
             </div>
             <div>
-              <p className="text-slate-400 text-sm">Kuukauden kulut</p>
-              <p className="text-white text-sm">Aktiiviset kiinteät menot</p>
+              <p className="text-slate-400 text-xs sm:text-sm">Kuukauden kulut</p>
+              <p className="text-white text-xs sm:text-sm">Aktiiviset kiinteät menot</p>
             </div>
           </div>
           
-          <div className="mb-4">
-            <span className="text-5xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <div className="mb-3 sm:mb-4">
+            <span className="text-3xl sm:text-4xl md:text-5xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
               {formatCurrency(summary?.expenses?.total || 0).replace('€', '').trim()}
             </span>
-            <span className="text-2xl text-slate-400 ml-2">€ /kk</span>
+            <span className="text-lg sm:text-2xl text-slate-400 ml-1 sm:ml-2">€ /kk</span>
           </div>
           
           <div className="flex items-center justify-between mb-2">
@@ -130,45 +130,45 @@ const Dashboard = () => {
         </div>
 
         {/* Income Card - Green */}
-        <div className="bg-emerald-500 rounded-2xl p-6 text-white card-hover" data-testid="income-card">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <Wallet className="w-5 h-5" />
+        <div className="bg-emerald-500 rounded-2xl p-4 sm:p-6 text-white card-hover" data-testid="income-card">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <span className="font-medium">Tulot & Käteen jäävä</span>
+              <span className="font-medium text-sm sm:text-base">Tulot & Käteen jäävä</span>
             </div>
             <Link to="/dashboard/incomes">
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                <Plus className="w-4 h-4 mr-1" />
-                Lisää
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 px-2 sm:px-3">
+                <Plus className="w-4 h-4" />
+                <span className="hidden sm:inline ml-1">Lisää</span>
               </Button>
             </Link>
           </div>
           
-          <div className="mb-4">
-            <p className="text-emerald-100 text-sm mb-1">Nettotulot yhteensä</p>
-            <p className="text-3xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <div className="mb-3 sm:mb-4">
+            <p className="text-emerald-100 text-xs sm:text-sm mb-1">Nettotulot yhteensä</p>
+            <p className="text-2xl sm:text-3xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
               {formatCurrency(summary?.income?.total || 0)}
             </p>
           </div>
           
-          <div className="pt-4 border-t border-white/20">
-            <p className="text-emerald-100 text-sm mb-1">Käteen jää</p>
-            <p className="text-2xl font-bold tabular-nums">
+          <div className="pt-3 sm:pt-4 border-t border-white/20">
+            <p className="text-emerald-100 text-xs sm:text-sm mb-1">Käteen jää</p>
+            <p className="text-xl sm:text-2xl font-bold tabular-nums">
               {formatCurrency(summary?.balance?.remaining || 0, true)}
             </p>
           </div>
         </div>
 
         {/* Loans Card */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 card-hover" data-testid="loans-card">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-red-600" />
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 card-hover" data-testid="loans-card">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
               </div>
-              <span className="font-medium text-slate-900">Lainat</span>
+              <span className="font-medium text-slate-900 text-sm sm:text-base">Lainat</span>
             </div>
             <Link to="/dashboard/loans">
               <Button variant="ghost" size="sm">
@@ -177,16 +177,16 @@ const Dashboard = () => {
             </Link>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div>
-              <p className="text-slate-500 text-sm">Jäljellä yhteensä</p>
-              <p className="text-2xl font-bold text-slate-900 tabular-nums">
+              <p className="text-slate-500 text-xs sm:text-sm">Jäljellä yhteensä</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 tabular-nums">
                 {formatCurrency(summary?.loans?.total_remaining || 0)}
               </p>
             </div>
             <div>
-              <p className="text-slate-500 text-sm">Kuukausierät</p>
-              <p className="text-lg font-semibold text-red-600 tabular-nums">
+              <p className="text-slate-500 text-xs sm:text-sm">Kuukausierät</p>
+              <p className="text-base sm:text-lg font-semibold text-red-600 tabular-nums">
                 -{formatCurrency(summary?.loans?.monthly_payments || 0)}
               </p>
             </div>
@@ -194,13 +194,13 @@ const Dashboard = () => {
         </div>
 
         {/* Savings Card */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-100 card-hover" data-testid="savings-card">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <PiggyBank className="w-5 h-5 text-blue-600" />
+        <div className="bg-white rounded-2xl p-4 sm:p-6 border border-slate-100 card-hover" data-testid="savings-card">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <PiggyBank className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               </div>
-              <span className="font-medium text-slate-900">Säästöt</span>
+              <span className="font-medium text-slate-900 text-sm sm:text-base">Säästöt</span>
             </div>
             <Link to="/dashboard/savings">
               <Button variant="ghost" size="sm">
@@ -209,16 +209,16 @@ const Dashboard = () => {
             </Link>
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div>
-              <p className="text-slate-500 text-sm">Säästetty yhteensä</p>
-              <p className="text-2xl font-bold text-slate-900 tabular-nums">
+              <p className="text-slate-500 text-xs sm:text-sm">Säästetty yhteensä</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 tabular-nums">
                 {formatCurrency(summary?.savings?.total_saved || 0)}
               </p>
             </div>
             <div>
-              <p className="text-slate-500 text-sm">Tavoite</p>
-              <p className="text-lg font-semibold text-blue-600 tabular-nums">
+              <p className="text-slate-500 text-xs sm:text-sm">Tavoite</p>
+              <p className="text-base sm:text-lg font-semibold text-blue-600 tabular-nums">
                 {formatCurrency(summary?.savings?.total_target || 0)}
               </p>
             </div>
@@ -232,18 +232,18 @@ const Dashboard = () => {
         </div>
 
         {/* Net Worth Card */}
-        <div className="bg-slate-900 rounded-2xl p-6 text-white card-hover" data-testid="networth-card">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-5 h-5" />
+        <div className="bg-slate-900 rounded-2xl p-4 sm:p-6 text-white card-hover" data-testid="networth-card">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <span className="font-medium">Nettovarallisuus</span>
+            <span className="font-medium text-sm sm:text-base">Nettovarallisuus</span>
           </div>
           
-          <p className="text-3xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
+          <p className="text-2xl sm:text-3xl font-bold tabular-nums" style={{ fontFamily: 'Manrope, sans-serif' }}>
             {formatCurrency(summary?.balance?.net_worth || 0)}
           </p>
-          <p className="text-slate-400 text-sm mt-2">Säästöt - Lainat</p>
+          <p className="text-slate-400 text-xs sm:text-sm mt-2">Säästöt - Lainat</p>
         </div>
       </div>
 
