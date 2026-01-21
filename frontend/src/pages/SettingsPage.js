@@ -2,9 +2,6 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../lib/api";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Switch } from "../components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +13,6 @@ import { toast } from "sonner";
 import { 
   User, 
   CreditCard, 
-  Bell, 
   Shield, 
   LogOut,
   ChevronRight,
@@ -26,13 +22,7 @@ import {
 
 const SettingsPage = () => {
   const { user, logout, refreshUser } = useAuth();
-  const [loading, setLoading] = useState(false);
   const [paymentLoading, setPaymentLoading] = useState(false);
-  const [notifications, setNotifications] = useState({
-    budgetAlerts: true,
-    weeklyReport: false,
-    monthlyReport: true
-  });
 
   const handlePayment = async () => {
     setPaymentLoading(true);
@@ -158,52 +148,6 @@ const SettingsPage = () => {
             </Button>
           </div>
         )}
-      </div>
-
-      {/* Notifications Section */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-100">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Bell className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-slate-900">Ilmoitukset</h2>
-            <p className="text-sm text-slate-500">Valitse mitä ilmoituksia saat</p>
-          </div>
-        </div>
-        
-        <div className="space-y-4">
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="font-medium text-slate-900">Budjettivaroitukset</p>
-              <p className="text-sm text-slate-500">Saat ilmoituksen kun lähestyt budjettirajaa</p>
-            </div>
-            <Switch 
-              checked={notifications.budgetAlerts}
-              onCheckedChange={(checked) => setNotifications({...notifications, budgetAlerts: checked})}
-            />
-          </div>
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="font-medium text-slate-900">Viikkoraportti</p>
-              <p className="text-sm text-slate-500">Saat viikoittaisen yhteenvedon sähköpostilla</p>
-            </div>
-            <Switch 
-              checked={notifications.weeklyReport}
-              onCheckedChange={(checked) => setNotifications({...notifications, weeklyReport: checked})}
-            />
-          </div>
-          <div className="flex items-center justify-between py-3">
-            <div>
-              <p className="font-medium text-slate-900">Kuukausiraportti</p>
-              <p className="text-sm text-slate-500">Saat kuukausittaisen yhteenvedon sähköpostilla</p>
-            </div>
-            <Switch 
-              checked={notifications.monthlyReport}
-              onCheckedChange={(checked) => setNotifications({...notifications, monthlyReport: checked})}
-            />
-          </div>
-        </div>
       </div>
 
       {/* Security Section */}
