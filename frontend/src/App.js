@@ -11,6 +11,8 @@ import ExpensesPage from "./pages/ExpensesPage";
 import IncomesPage from "./pages/IncomesPage";
 import LoansPage from "./pages/LoansPage";
 import SavingsPage from "./pages/SavingsPage";
+import ReportsPage from "./pages/ReportsPage";
+import SettingsPage from "./pages/SettingsPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import PaymentCancelPage from "./pages/PaymentCancelPage";
 import "./App.css";
@@ -73,6 +75,8 @@ function AppRoutes() {
         <Route path="incomes" element={<IncomesPage />} />
         <Route path="loans" element={<LoansPage />} />
         <Route path="savings" element={<SavingsPage />} />
+        <Route path="reports" element={<ReportsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
       
       {/* Catch all */}
