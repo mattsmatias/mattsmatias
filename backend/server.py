@@ -836,6 +836,388 @@ async def health_check():
     return {"status": "healthy", "service": "walleta-api"}
 
 
+# ============== NORDIGEN BANK CONNECTION ==============
+
+class NordigenTokenManager:
+    """Manages Nordigen API tokens"""
+    def __init__(self):
+        self.access_token: Optional[str] = None
+        self.refresh_token: Optional[str] = None
+        self.token_expiry: float = 0
+    
+    async def get_access_token(self) -> str:
+        current_time = time.time()
+        
+        if self.access_token and current_time < self.token_expiry:
+            return self.access_token
+        
+        if self.refresh_token and current_time > self.token_expiry:
+            return await self._refresh_access_token()
+        
+        return await self._generate_new_token_pair()
+    
+    async def _generate_new_token_pair(self) -> str:
+        if not NORDIGEN_SECRET_ID or not NORDIGEN_SECRET_KEY:
+            raise HTTPException(status_code=500, detail="Nordigen credentials not configured")
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{NORDIGEN_API_URL}/token/new/",
+                json={
+                    "secret_id": NORDIGEN_SECRET_ID,
+                    "secret_key": NORDIGEN_SECRET_KEY
+                }
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            self.access_token = data["access"]
+            self.refresh_token = data["refresh"]
+            self.token_expiry = time.time() + 86400  # 24 hours
+            
+            return self.access_token
+    
+    async def _refresh_access_token(self) -> str:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{NORDIGEN_API_URL}/token/refresh/",
+                json={"refresh": self.refresh_token}
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            self.access_token = data["access"]
+            self.token_expiry = time.time() + 86400
+            
+            return self.access_token
+
+nordigen_token_manager = NordigenTokenManager()
+
+
+class BankInstitution(BaseModel):
+    id: str
+    name: str
+    bic: str = ""
+    logo: Optional[str] = None
+    countries: List[str] = []
+
+class BankConnectionRequest(BaseModel):
+    institution_id: str
+    redirect_url: str
+
+class BankConnectionResponse(BaseModel):
+    id: str
+    link: str
+    institution_id: str
+    status: str
+
+class BankAccount(BaseModel):
+    id: str
+    iban: str
+    name: str
+    currency: str
+    balance: float = 0
+
+class BankTransaction(BaseModel):
+    id: str
+    date: str
+    amount: float
+    currency: str
+    description: str
+    category: Optional[str] = None
+
+
+@api_router.get("/banks/finland", response_model=List[BankInstitution])
+async def get_finnish_banks():
+    """Get list of Finnish banks supported by Nordigen"""
+    try:
+        access_token = await nordigen_token_manager.get_access_token()
+        
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.get(
+                f"{NORDIGEN_API_URL}/institutions/?country=FI",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            response.raise_for_status()
+            
+            institutions = response.json()
+            
+            banks = [
+                BankInstitution(
+                    id=inst["id"],
+                    name=inst["name"],
+                    bic=inst.get("bic", ""),
+                    logo=inst.get("logo"),
+                    countries=inst.get("countries", ["FI"])
+                )
+                for inst in institutions
+            ]
+            
+            return banks
+            
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to fetch banks: {str(e)}")
+        raise HTTPException(status_code=500, detail="Pankkien haku epäonnistui")
+    except Exception as e:
+        logger.error(f"Error fetching banks: {str(e)}")
+        raise HTTPException(status_code=500, detail="Pankkien haku epäonnistui")
+
+
+@api_router.post("/banks/connect", response_model=BankConnectionResponse)
+async def create_bank_connection(
+    request_data: BankConnectionRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Create a bank connection requisition"""
+    try:
+        access_token = await nordigen_token_manager.get_access_token()
+        reference = f"walleta_{user['id']}_{str(uuid.uuid4())[:8]}"
+        
+        async with httpx.AsyncClient() as http_client:
+            # Create end user agreement
+            agreement_response = await http_client.post(
+                f"{NORDIGEN_API_URL}/agreements/enduser/",
+                headers={"Authorization": f"Bearer {access_token}"},
+                json={
+                    "institution_id": request_data.institution_id,
+                    "max_historical_days": 90,
+                    "access_valid_for_days": 90,
+                    "access_scope": ["balances", "details", "transactions"]
+                }
+            )
+            agreement_response.raise_for_status()
+            agreement = agreement_response.json()
+            
+            # Create requisition
+            requisition_response = await http_client.post(
+                f"{NORDIGEN_API_URL}/requisitions/",
+                headers={"Authorization": f"Bearer {access_token}"},
+                json={
+                    "redirect": request_data.redirect_url,
+                    "institution_id": request_data.institution_id,
+                    "reference": reference,
+                    "agreement": agreement["id"],
+                    "user_language": "FI"
+                }
+            )
+            requisition_response.raise_for_status()
+            requisition = requisition_response.json()
+            
+            # Store requisition in database
+            now = datetime.now(timezone.utc).isoformat()
+            await db.bank_connections.insert_one({
+                "id": requisition["id"],
+                "user_id": user["id"],
+                "institution_id": request_data.institution_id,
+                "agreement_id": agreement["id"],
+                "reference": reference,
+                "status": requisition.get("status", "CR"),
+                "created_at": now
+            })
+            
+            return BankConnectionResponse(
+                id=requisition["id"],
+                link=requisition["link"],
+                institution_id=request_data.institution_id,
+                status=requisition.get("status", "CR")
+            )
+            
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to create bank connection: {str(e)}")
+        raise HTTPException(status_code=500, detail="Pankkiyhteyden luonti epäonnistui")
+
+
+@api_router.get("/banks/connections")
+async def get_bank_connections(user: dict = Depends(get_current_user)):
+    """Get user's bank connections"""
+    connections = await db.bank_connections.find(
+        {"user_id": user["id"]},
+        {"_id": 0}
+    ).to_list(100)
+    return connections
+
+
+@api_router.get("/banks/connection/{requisition_id}/accounts")
+async def get_connection_accounts(requisition_id: str, user: dict = Depends(get_current_user)):
+    """Get accounts from a bank connection"""
+    try:
+        # Verify connection belongs to user
+        connection = await db.bank_connections.find_one({
+            "id": requisition_id,
+            "user_id": user["id"]
+        })
+        if not connection:
+            raise HTTPException(status_code=404, detail="Yhteyttä ei löydy")
+        
+        access_token = await nordigen_token_manager.get_access_token()
+        
+        async with httpx.AsyncClient() as http_client:
+            # Get requisition details
+            req_response = await http_client.get(
+                f"{NORDIGEN_API_URL}/requisitions/{requisition_id}/",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            req_response.raise_for_status()
+            req_data = req_response.json()
+            
+            # Update status
+            await db.bank_connections.update_one(
+                {"id": requisition_id},
+                {"$set": {"status": req_data.get("status", ""), "accounts": req_data.get("accounts", [])}}
+            )
+            
+            accounts = []
+            for account_id in req_data.get("accounts", []):
+                # Get account details
+                acc_response = await http_client.get(
+                    f"{NORDIGEN_API_URL}/accounts/{account_id}/details/",
+                    headers={"Authorization": f"Bearer {access_token}"}
+                )
+                if acc_response.status_code == 200:
+                    acc_data = acc_response.json().get("account", {})
+                    
+                    # Get balance
+                    bal_response = await http_client.get(
+                        f"{NORDIGEN_API_URL}/accounts/{account_id}/balances/",
+                        headers={"Authorization": f"Bearer {access_token}"}
+                    )
+                    balance = 0
+                    if bal_response.status_code == 200:
+                        balances = bal_response.json().get("balances", [])
+                        if balances:
+                            balance = float(balances[0].get("balanceAmount", {}).get("amount", 0))
+                    
+                    accounts.append(BankAccount(
+                        id=account_id,
+                        iban=acc_data.get("iban", ""),
+                        name=acc_data.get("name", acc_data.get("product", "Tili")),
+                        currency=acc_data.get("currency", "EUR"),
+                        balance=balance
+                    ))
+            
+            return {"accounts": accounts, "status": req_data.get("status")}
+            
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to fetch accounts: {str(e)}")
+        raise HTTPException(status_code=500, detail="Tilien haku epäonnistui")
+
+
+@api_router.get("/banks/account/{account_id}/transactions")
+async def get_account_transactions(
+    account_id: str,
+    user: dict = Depends(get_current_user)
+):
+    """Get transactions from a bank account"""
+    try:
+        access_token = await nordigen_token_manager.get_access_token()
+        
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.get(
+                f"{NORDIGEN_API_URL}/accounts/{account_id}/transactions/",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            transactions = []
+            for trans in data.get("transactions", {}).get("booked", []):
+                amount = float(trans.get("transactionAmount", {}).get("amount", 0))
+                description = trans.get("remittanceInformationUnstructured", "") or trans.get("creditorName", "") or trans.get("debtorName", "Tapahtuma")
+                
+                transactions.append(BankTransaction(
+                    id=trans.get("transactionId", str(uuid.uuid4())),
+                    date=trans.get("bookingDate", ""),
+                    amount=amount,
+                    currency=trans.get("transactionAmount", {}).get("currency", "EUR"),
+                    description=description,
+                    category=None
+                ))
+            
+            return {"transactions": transactions}
+            
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to fetch transactions: {str(e)}")
+        raise HTTPException(status_code=500, detail="Tapahtumien haku epäonnistui")
+
+
+@api_router.post("/banks/import-transactions/{account_id}")
+async def import_transactions(
+    account_id: str,
+    user: dict = Depends(get_current_user)
+):
+    """Import transactions from bank to Walleta expenses/incomes"""
+    try:
+        access_token = await nordigen_token_manager.get_access_token()
+        
+        async with httpx.AsyncClient() as http_client:
+            response = await http_client.get(
+                f"{NORDIGEN_API_URL}/accounts/{account_id}/transactions/",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            imported_count = 0
+            now = datetime.now(timezone.utc).isoformat()
+            
+            for trans in data.get("transactions", {}).get("booked", []):
+                amount = float(trans.get("transactionAmount", {}).get("amount", 0))
+                description = trans.get("remittanceInformationUnstructured", "") or trans.get("creditorName", "") or trans.get("debtorName", "Pankkitapahtuma")
+                date = trans.get("bookingDate", datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+                transaction_id = trans.get("transactionId", "")
+                
+                # Check if already imported
+                existing = await db.imported_transactions.find_one({
+                    "user_id": user["id"],
+                    "transaction_id": transaction_id
+                })
+                if existing:
+                    continue
+                
+                if amount < 0:
+                    # Expense
+                    expense_id = str(uuid.uuid4())
+                    await db.expenses.insert_one({
+                        "id": expense_id,
+                        "user_id": user["id"],
+                        "amount": abs(amount),
+                        "description": description,
+                        "category": "Muut",
+                        "date": date,
+                        "created_at": now,
+                        "imported": True
+                    })
+                else:
+                    # Income
+                    income_id = str(uuid.uuid4())
+                    await db.incomes.insert_one({
+                        "id": income_id,
+                        "user_id": user["id"],
+                        "amount": amount,
+                        "description": description,
+                        "source": "other",
+                        "date": date,
+                        "recurring": False,
+                        "created_at": now,
+                        "imported": True
+                    })
+                
+                # Mark as imported
+                await db.imported_transactions.insert_one({
+                    "user_id": user["id"],
+                    "transaction_id": transaction_id,
+                    "account_id": account_id,
+                    "imported_at": now
+                })
+                imported_count += 1
+            
+            return {"message": f"Tuotiin {imported_count} tapahtumaa", "imported_count": imported_count}
+            
+    except httpx.HTTPError as e:
+        logger.error(f"Failed to import transactions: {str(e)}")
+        raise HTTPException(status_code=500, detail="Tapahtumien tuonti epäonnistui")
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
