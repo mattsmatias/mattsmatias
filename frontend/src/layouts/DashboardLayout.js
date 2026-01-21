@@ -21,7 +21,8 @@ import {
   LogOut,
   Settings,
   Menu,
-  X
+  X,
+  BarChart3
 } from "lucide-react";
 
 const navItems = [
@@ -31,6 +32,7 @@ const navItems = [
   { path: "/dashboard/incomes", icon: Wallet, label: "Tulot" },
   { path: "/dashboard/loans", icon: Target, label: "Lainat" },
   { path: "/dashboard/savings", icon: PiggyBank, label: "Säästöt" },
+  { path: "/dashboard/reports", icon: BarChart3, label: "Raportit" },
 ];
 
 const DashboardLayout = () => {
@@ -188,6 +190,17 @@ const DashboardLayout = () => {
               <span className="truncate">{item.label}</span>
             </NavLink>
           ))}
+          <NavLink
+            to="/dashboard/reports"
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-0.5 px-2 py-2 text-[10px] sm:text-xs font-medium transition-colors ${
+                isActive ? "text-slate-900" : "text-slate-400"
+              }`
+            }
+          >
+            <BarChart3 className="w-5 h-5" />
+            <span className="truncate">Raportit</span>
+          </NavLink>
         </div>
       </nav>
     </div>
