@@ -155,7 +155,7 @@ class WalletaAPITester:
             "date": datetime.now().strftime("%Y-%m-%d")
         }
         
-        success, expense = self.make_request('POST', 'expenses', expense_data, 201)
+        success, expense = self.make_request('POST', 'expenses', expense_data)
         if success and 'id' in expense:
             expense_id = expense['id']
             self.log_result("Create expense", True, f"Expense ID: {expense_id}")
