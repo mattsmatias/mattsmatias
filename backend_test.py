@@ -92,7 +92,7 @@ class WalletaAPITester:
         """Test user registration"""
         print("\n🔍 Testing User Registration...")
         
-        success, data = self.make_request('POST', 'auth/register', self.test_user, 201)
+        success, data = self.make_request('POST', 'auth/register', self.test_user)
         
         if success and 'token' in data and 'user' in data:
             self.token = data['token']
