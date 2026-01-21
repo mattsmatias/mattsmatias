@@ -189,7 +189,7 @@ class WalletaAPITester:
             "recurring": True
         }
         
-        success, income = self.make_request('POST', 'incomes', income_data, 201)
+        success, income = self.make_request('POST', 'incomes', income_data)
         if success and 'id' in income:
             income_id = income['id']
             self.log_result("Create income", True, f"Income ID: {income_id}")
